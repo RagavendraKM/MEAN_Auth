@@ -1,0 +1,133 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">Eventhub</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/events" routerLinkActive="active">Events</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/special" routerLinkActive="active">Members</a>
+      </li>
+      <div class="col-sm-6 button-event">
+        <a class="nav-link" style="cursor:pointer" data-toggle="modal" data-target="#addFormModal">ADD EVENT</a>
+      </div>
+      <li>
+        <a class="nav-link" *ngIf="_authService.loggedIn()" style="cursor:pointer" data-toggle="modal" data-toggle="modal" data-target="#addSpecialFormModal">Add</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav">
+        <a class="nav-link" *ngIf="!_authService.loggedIn()"  routerLink="/login" routerLinkActive="active">Login</a>
+        <a class="nav-link" *ngIf="!_authService.loggedIn()"  routerLink="/register" routerLinkActive="active">Register</a>
+        <a class="nav-link" *ngIf="_authService.loggedIn()" style="cursor:pointer" (click)="_authService.logOutUser()">LogOut</a>
+      </ul>
+  </div>
+</nav>    
+<div class="container">
+  <router-outlet></router-outlet>            
+</div>
+
+
+<!-- Add Event Form Modal -->
+<div class="modal fade" id="addFormModal" tabindex="-1" role="dialog" aria-labelledby="addFormModalTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <form [formGroup]="addEventForm" (ngSubmit)="onAddEvent()" action="events/events.component.html">
+            <!-- (click)="_eventService.addSpecialEvent(id)" -->
+   <!-- <form method="post" action="/add"> -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="addFormModalTitle">ADD EVENT</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="form-group">
+            <label for="ename">Event Name</label>
+            <!-- <input formControlName="ename" type="text" class="form-control rounded-0" [value]="ename" required /> -->
+            <input type="text" [(ngModel)]="add.ename" formControlName="ename"  class="form-control rounded-0" [value]="ename" (input)="ename=$event.target.value" [ngClass]="{ 'is-invalid': submitted && f.ename.errors }"  required />
+              <div *ngIf="submitted && f.ename.errors" class="invalid-feedback">
+                <div *ngIf="submitted && f.ename.errors.required">Event Name is required</div>
+              </div>
+      </div>  
+          
+         
+          <div class="form-group">
+            <label for="edate">Event Date</label>
+            <input type="date" [(ngModel)]="add.edate" formControlName="edate" class="form-control rounded-0" [value]="edate" (input)="edate=$event.target.value" [ngClass]="{ 'is-invalid': submitted && f.edate.errors }" required />
+            <div *ngIf="submitted && f.edate.errors" class="invalid-feedback">
+              <div *ngIf="submitted && f.edate.errors.required">Event Date is required</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="edesc">Description</label>
+            <input type="text" [(ngModel)]="add.edesc" formControlName="edesc" class="form-control rounded-0" [value]="edesc" (input)="edesc=$event.target.value" [ngClass]="{ 'is-invalid': submitted && f.edesc.errors }" required />
+            <div *ngIf="submitted && f.edesc.errors" class="invalid-feedback">
+              <div *ngIf="submitted && f.edesc.errors.required">Event Description is required</div>
+            </div>
+          </div>
+          <input type="file" name="imgFile" ng2FileSelect [uploader]="uploader" />
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <!-- <input type="submit" class="btn btn-success btn-s"  [disabled]="(f.edate.errors || f.ename.errors || f.edesc.errors)"/> -->
+          <button  class="btn btn-success btn-s" (click)="onAddEvent()" data-dismiss="modal" 
+          [disabled]="(!uploader.getNotUploadedItems().length || f.edate.errors || f.ename.errors || f.edesc.errors)">
+          ADD</button>
+        </div>
+      </form>
+    </div> 
+  </div>
+</div>
+
+<!-- Add Special event Form Modal -->
+<div class="modal fade" id="addSpecialFormModal" tabindex="-1" role="dialog" aria-labelledby="addFormModalTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <form [formGroup]="addSpecialEventForm" (ngSubmit)="onAddSpecialEvent()" action="events/events.component.html">
+            <!-- (click)="_eventService.addSpecialEvent(id)" -->
+   <!-- <form method="post" action="/add"> -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="addFormModalTitle">ADD SPECIAL EVENT</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="form-group">
+            <label for="ename">Event Name</label>
+            <!-- <input formControlName="ename" type="text" class="form-control rounded-0" [value]="ename" required /> -->
+            <input type="text" [(ngModel)]="add.ename" formControlName="ename"  class="form-control rounded-0" [ngClass]="{ 'is-invalid': submitted && f.ename.errors }"  required />
+              <div *ngIf="submitted && f.ename.errors" class="invalid-feedback">
+                <div *ngIf="submitted && f.ename.errors.required">Event Name is required</div>
+              </div>
+      </div>  
+          
+         
+          <div class="form-group">
+            <label for="edate">Event Date</label>
+            <input type="date" [(ngModel)]="add.edate" formControlName="edate" class="form-control rounded-0" [ngClass]="{ 'is-invalid': submitted && f.edate.errors }" required />
+            <div *ngIf="submitted && f.edate.errors" class="invalid-feedback">
+              <div *ngIf="submitted && f.edate.errors.required">Event Date is required</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="edesc">Description</label>
+            <input type="text" [(ngModel)]="add.edesc" formControlName="edesc" class="form-control rounded-0" [ngClass]="{ 'is-invalid': submitted && f.edesc.errors }" required />
+            <div *ngIf="submitted && f.edesc.errors" class="invalid-feedback">
+              <div *ngIf="submitted && f.edesc.errors.required">Event Description is required</div>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <!-- <input type="submit" class="btn btn-success btn-s"  [disabled]="(f.edate.errors || f.ename.errors || f.edesc.errors)"/> -->
+          <button  class="btn btn-success btn-s" (click)="onAddSpecialEvent()" data-dismiss="modal" [disabled]="(f.edate.errors || f.ename.errors || f.edesc.errors)">ADD</button>
+        </div>
+      </form>
+    </div> 
+  </div>
+</div>

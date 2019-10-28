@@ -1,0 +1,9 @@
+#devops-ui
+version : '3'
+services : 
+  ngapp :
+    build : 
+      context : .
+      dockerfile : Dockerfile
+    ports :
+      - "80:80"
