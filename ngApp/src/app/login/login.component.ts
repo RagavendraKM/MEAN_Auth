@@ -9,7 +9,7 @@ import { AuthService } from '../auth.service';
 })
 export class LoginComponent implements OnInit {
 
-  loginUserData = {}
+  loginUserData = {email : '', password : ''}
   httpResponseObj = {
     status: '',
     statusText: ''
@@ -19,16 +19,17 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
   }
 
-  loginUser() {
+  async loginUser() {
     this.httpResponseObj = {
       status: '',
       statusText: ''
     };
-    this._auth.loginUser(this.loginUserData)
+    await this._auth.loginUser(this.loginUserData)
       .subscribe(
         res => {
           console.log(res)
-          localStorage.setItem('token', res.token)
+          localStorage.setItem('email', res.email);
+          localStorage.setItem('token', res.token);
           this._router.navigate(['/special'])
         },
         err => {

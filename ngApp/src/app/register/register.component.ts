@@ -13,7 +13,7 @@ export class RegisterComponent implements OnInit {
   registerForm : FormGroup ;
   submitted = false;
 
-  regUserData = {}
+  regUserData = {fname : '', lname : '', email: '', password: ''}
   constructor(private _auth:AuthService,private _router:Router,private formBuilder : FormBuilder,
   private SocialAuthService : AuthService) { }
 
@@ -42,6 +42,7 @@ export class RegisterComponent implements OnInit {
         console.log(res)
         localStorage.setItem('token',res.token)
         this._router.navigate(['/special'])
+        localStorage.setItem('email',this.regUserData.email)
       },
        err => console.log(err)
      )

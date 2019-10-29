@@ -88,8 +88,6 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
         <form [formGroup]="addSpecialEventForm" (ngSubmit)="onAddSpecialEvent()" action="events/events.component.html">
-            <!-- (click)="_eventService.addSpecialEvent(id)" -->
-   <!-- <form method="post" action="/add"> -->
       <div class="modal-header">
         <h5 class="modal-title" id="addFormModalTitle">ADD SPECIAL EVENT</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -100,32 +98,31 @@
           <div class="form-group">
             <label for="ename">Event Name</label>
             <!-- <input formControlName="ename" type="text" class="form-control rounded-0" [value]="ename" required /> -->
-            <input type="text" [(ngModel)]="add.ename" formControlName="ename"  class="form-control rounded-0" [ngClass]="{ 'is-invalid': submitted && f.ename.errors }"  required />
-              <div *ngIf="submitted && f.ename.errors" class="invalid-feedback">
-                <div *ngIf="submitted && f.ename.errors.required">Event Name is required</div>
+            <input type="text" [(ngModel)]="spl.ename" formControlName="ename"  class="form-control rounded-0" [ngClass]="{ 'is-invalid': submitted && s.ename.errors }"  required />
+              <div *ngIf="submitted && s.ename.errors" class="invalid-feedback">
+                <div *ngIf="submitted && s.ename.errors.required">Event Name is required</div>
               </div>
       </div>  
-          
-         
           <div class="form-group">
             <label for="edate">Event Date</label>
-            <input type="date" [(ngModel)]="add.edate" formControlName="edate" class="form-control rounded-0" [ngClass]="{ 'is-invalid': submitted && f.edate.errors }" required />
-            <div *ngIf="submitted && f.edate.errors" class="invalid-feedback">
-              <div *ngIf="submitted && f.edate.errors.required">Event Date is required</div>
+            <input type="date" [(ngModel)]="spl.edate" formControlName="edate" class="form-control rounded-0" [ngClass]="{ 'is-invalid': submitted && s.edate.errors }" required />
+            <div *ngIf="submitted && s.edate.errors" class="invalid-feedback">
+              <div *ngIf="submitted && s.edate.errors.required">Event Date is required</div>
             </div>
           </div>
           <div class="form-group">
             <label for="edesc">Description</label>
-            <input type="text" [(ngModel)]="add.edesc" formControlName="edesc" class="form-control rounded-0" [ngClass]="{ 'is-invalid': submitted && f.edesc.errors }" required />
-            <div *ngIf="submitted && f.edesc.errors" class="invalid-feedback">
-              <div *ngIf="submitted && f.edesc.errors.required">Event Description is required</div>
+            <input type="text" [(ngModel)]="spl.edesc" formControlName="edesc" class="form-control rounded-0" [ngClass]="{ 'is-invalid': submitted && s.edesc.errors }" required />
+            <div *ngIf="submitted && s.edesc.errors" class="invalid-feedback">
+              <div *ngIf="submitted && s.edesc.errors.required">Event Description is required</div>
             </div>
           </div>
+          <input type="file" name="specialImgFile" ng2FileSelect [uploader]="specialUploader" />
       </div>
       <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <!-- <input type="submit" class="btn btn-success btn-s"  [disabled]="(f.edate.errors || f.ename.errors || f.edesc.errors)"/> -->
-          <button  class="btn btn-success btn-s" (click)="onAddSpecialEvent()" data-dismiss="modal" [disabled]="(f.edate.errors || f.ename.errors || f.edesc.errors)">ADD</button>
+          <button  class="btn btn-success btn-s" (click)="onAddSpecialEvent()" data-dismiss="modal" 
+          [disabled]="(!specialUploader.getNotUploadedItems().length || s.edate.errors || s.ename.errors || s.edesc.errors)">ADD</button>
         </div>
       </form>
     </div> 

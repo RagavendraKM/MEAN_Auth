@@ -10,6 +10,8 @@ private _eventsUrl = 'http://localhost:3000/api/events';
 private _specialEventsUrl = 'http://localhost:3000/api/special';
 private _addEventsUrl = 'http://localhost:3000/api/addEvent';
 private _addSpecialEventsUrl = 'http://localhost:3000/api/addSpecial';
+private _deleteEventsUrl = 'http://localhost:3000/api/deleteEvent';
+private _deleteSpecialEventsUrl = 'http://localhost:3000/api/deleteSpecial';
 
   constructor(private http:HttpClient) { }
 
@@ -37,5 +39,15 @@ private _addSpecialEventsUrl = 'http://localhost:3000/api/addSpecial';
 
   addSpecialEvent(id : Object){
     return this.http.post<any>( this._addSpecialEventsUrl , id )
+  }
+
+  deleteEvent(id : Object){
+    const _url = `${this._deleteEventsUrl}/${id}`;
+    return this.http.delete<any>(_url)
+  }
+
+  deleteSpecialEvent(id : Object){
+    const _url = `${this._deleteSpecialEventsUrl}/${id}`;
+    return this.http.delete<any>(_url)
   }
 }

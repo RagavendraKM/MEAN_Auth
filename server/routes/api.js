@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const mongoose = require('mongoose');
 const multer = require('multer');
+const fs = require('fs');
 const { User, Events,SpecialEvents } = require('../models/user');
 const db = "mongodb+srv://admin:admin@cluster0-pvipx.mongodb.net/eventsHub?retryWrites=true"
 
@@ -46,6 +47,25 @@ var ImgUpload = multer({
    fileFilter : fileFilter 
 }).single('imgFile');
 
+var SpecialImgStorage = multer.diskStorage({
+  destination : function(req,file,cb) {
+      cb(null, '../ngApp/src/assets')
+  },
+  filename : function(req,file,cb) {
+      var datetime = Date().split(" ")[4].split(":").join("");
+      cb(null,file.originalname + '-' + datetime + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1])
+  }
+});
+
+var SpecialImgUpload = multer({
+  storage : SpecialImgStorage,
+  dest : '../uploads',
+  limits : {
+      fileSize : 1024 * 1024 * 5
+  },
+  fileFilter : fileFilter 
+}).single('specialImgFile');
+
 router.post('/register', async (req, res) => {
 
   let user = await User.findOne({ email : req.body.email });
@@ -84,14 +104,16 @@ router.post('/login', (req, res) => {
     }
     else {
       let payload = { subject: user._id }
+      let email = user.email
       let token = jwt.sign(payload, 'secretKey')
-      res.status(200).send({ token });
+      res.status(200).send({ token , email });
     }
   })
 });
 
 router.get('/events', (req, res) => {
-  Events.find((err, event) => {
+  Events.find({ createdBy : "a@a.com" },(err, event) => {
+    console.log(req);
     if (err) { console.log(err) }
     res.json(event);
     return event;
@@ -125,12 +147,11 @@ router.post('/addEvent', (req, res) => {
         console.log("File not found");
         return;
     } else {
-        //console.log(req);
-        //console.log(req.file);
         var event = new Events({
             eventName : req.body.ename,
             eventDate : req.body.edate,
             eventDescription : req.body.edesc,
+            createdBy : req.body.createdBy,
             eventGallery : req.file.path
         });
         event.save()
@@ -144,18 +165,31 @@ router.post('/addEvent', (req, res) => {
 });
 
 router.post('/addSpecial', (req, res) => {
-  var event = new SpecialEvents({
-    eventName: req.body.ename,
-    eventDescription: req.body.edesc,
-    eventDate: req.body.edate,
-    eventGallery: req.file.path
-  });
-  event.save()
-    .then(result => {
-      // console.log(event);
-      console.log(result);
-      res.status(200).json({ err_code: 0, err_desc: null, data: result });
-    });
+  SpecialImgUpload(req,res,function(err){
+    //console.log(req);
+    if(err){
+        console.log(err);
+        return;
+    }
+    if(!req.file){
+        console.log("File not found");
+        return;
+    } else {
+        var event = new SpecialEvents({
+            eventName : req.body.ename,
+            eventDate : req.body.edate,
+            eventDescription : req.body.edesc,
+            createdBy : req.body.createdBy,
+            eventGallery : req.file.path
+        });
+        event.save()
+        .then( result => {
+            console.log(result);
+            res.status(200).json({err_code:0,err_desc:null,data:result});
+        });
+
+    }
+}); 
 });
 
 router.get('/special/:id', (req, res) => {
@@ -163,6 +197,38 @@ router.get('/special/:id', (req, res) => {
     if(err) { console.log(err)}
     res.json(ids);
   })
+});
+
+router.delete('/deleteEvent/:id', (req, res) => {
+  Events.findOneAndDelete({_id :req.params.id} , (err,delId) => {
+    console.log(req.params.id);
+    if(err) { 
+      console.log(err);
+     } else {
+        res.json(delId);
+        fs.unlink(delId.eventGallery , (err) => {
+          if(err) console.log(err);
+          else console.log("File deleted in Local storage");
+        });
+       console.log("Deleted", delId);
+      }
+  });
+});
+
+router.delete('/deleteSpecial/:id', (req, res) => {
+  SpecialEvents.findOneAndDelete({_id :req.params.id} , (err,delId) => {
+    console.log(req.params.id);
+    if(err) { 
+      console.log(err);
+     } else {
+        res.json(delId);
+        fs.unlink(delId.eventGallery , (err) => {
+          if(err) console.log(err);
+          else console.log("File deleted in Local storage");
+        });
+       console.log("Deleted special" , delId);
+      }
+  });
 });
 
 router.get('/', (req, res) => {

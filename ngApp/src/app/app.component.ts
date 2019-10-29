@@ -20,10 +20,12 @@ export class AppComponent {
   addEventForm : FormGroup;
   addSpecialEventForm : FormGroup;
   add = {};
+  spl = {ename: '', edate: '', edesc: ''};
   public ename = '';
   public edate = '';
   public edesc = '';
-  
+  public createdBy = localStorage.getItem('email');
+
   public uploader : FileUploader = new FileUploader({
     url : _Eventurl , itemAlias : 'imgFile'
   });
@@ -50,7 +52,7 @@ export class AppComponent {
 
     this.uploader.onAfterAddingFile = (file) => { 
       file.withCredentials = false;
-      console.log(file); 
+      console.log("File" ,file); 
     }
     this.uploader.onCompleteItem = (item : any, response : any, status : any, headers : any) => {
       console.log("Image Uploaded succesfully: ", item, response, status);
@@ -58,7 +60,7 @@ export class AppComponent {
 
     this.specialUploader.onAfterAddingFile = (file) => { 
       file.withCredentials = false;
-      console.log(file); 
+      console.log("Special" ,file); 
     }
     this.specialUploader.onCompleteItem = (item : any, response : any, status : any, headers : any) => {
       console.log("Image Uploaded succesfully: ", item, response, status);
@@ -74,7 +76,8 @@ export class AppComponent {
   this.uploader.options.additionalParameter = {
     ename: this.ename,
     edate: this.edate,
-    edesc: this.edesc
+    edesc: this.edesc,
+    createdBy : this.createdBy
   };
     this.uploader.uploadAll();
     this._eventService.addEvent(this.add)
@@ -84,28 +87,38 @@ export class AppComponent {
     },
       err => console.log(err)      
     )
-    location.reload();
+    //location.reload();
     this._router.navigate(['/events']);
   }
 
   onAddSpecialEvent(){
     this.submitted = true;
     if (this.addSpecialEventForm.invalid) {
-      return; 
+      return;
   }
+  this.specialUploader.options.additionalParameter = {
+    ename: this.spl.ename,
+    edate: this.spl.edate,
+    edesc: this.spl.edesc,
+    createdBy : this.createdBy
+  };
+    this.specialUploader.uploadAll();
     this._eventService.addSpecialEvent(this.add)
     .subscribe(
-      res =>{ 
-        this.events = res
-        location.reload();
-      },
+      res => {
+      console.log(res);
+    },
       err => console.log(err)      
     )
-    
+    //location.reload();
     this._router.navigate(['/special']);
   }
 
   get f() { 
 return this.addEventForm.controls; 
+}
+
+get s() {
+  return this.addSpecialEventForm.controls;
 }
 }

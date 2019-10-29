@@ -11,16 +11,18 @@ const userSchema = new Schema({
 
 var EventSchema = mongoose.Schema({
     eventName : String,
-    eventDate : Date,
+    eventDate : String,
     eventDescription : String,
-    eventGallery : String
+    eventGallery : String,
+    createdBy : String
 });
 
 var SpecialEventSchema = mongoose.Schema({
     eventName : String,
-    eventDate : Date,
+    eventDate : String,
     eventDescription : String,
-    eventGallery : String
+    eventGallery : String,
+    createdBy : String
 });
 
 var User = mongoose.model('user', userSchema, 'users')

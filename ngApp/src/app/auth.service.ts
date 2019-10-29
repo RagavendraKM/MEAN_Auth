@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse  } from '@angular/common/http';
-import { post } from 'selenium-webdriver/http';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -31,7 +30,7 @@ private _loginUrl = "http://localhost:3000/api/login";
 
   logOutUser(){
     this._router.navigate(['/events'])
-    return localStorage.removeItem('token')
+    return localStorage.clear()
   }
 
 }
