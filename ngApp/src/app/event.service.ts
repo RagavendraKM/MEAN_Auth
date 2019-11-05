@@ -6,12 +6,14 @@ import { HttpClient } from '@angular/common/http';
 })
 export class EventService {
 
-private _eventsUrl = 'http://localhost:3000/api/events';
-private _specialEventsUrl = 'http://localhost:3000/api/special';
-private _addEventsUrl = 'http://localhost:3000/api/addEvent';
-private _addSpecialEventsUrl = 'http://localhost:3000/api/addSpecial';
-private _deleteEventsUrl = 'http://localhost:3000/api/deleteEvent';
-private _deleteSpecialEventsUrl = 'http://localhost:3000/api/deleteSpecial';
+  private _baseUrl = "http://3.83.55.183/api";
+
+private _eventsUrl = `${this._baseUrl}/events`;
+private _specialEventsUrl = `${this._baseUrl}/special`;
+private _addEventsUrl = `${this._baseUrl}/addEvent`;
+private _addSpecialEventsUrl = `${this._baseUrl}/addSpecial`;
+private _deleteEventsUrl = `${this._baseUrl}/deleteEvent`;
+private _deleteSpecialEventsUrl = `${this._baseUrl}/deleteSpecial`;
 
   constructor(private http:HttpClient) { }
 

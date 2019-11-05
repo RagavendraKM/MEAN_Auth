@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpResponse  } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -7,8 +7,10 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
 
-private _regUrl = "http://localhost:3000/api/register";
-private _loginUrl = "http://localhost:3000/api/login";
+  private _baseUrl = "http://3.83.55.183/api";
+
+private _regUrl = `${this._baseUrl}/register`;
+private _loginUrl = `${this._baseUrl}/login`;
 
   constructor(private http: HttpClient, private _router : Router) { }
 

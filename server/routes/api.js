@@ -2,10 +2,12 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 const mongoose = require('mongoose');
-const multer = require('multer');
 const fs = require('fs');
 const { User, Events,SpecialEvents } = require('../models/user');
+const {client} = require('../models/redis');
 const db = "mongodb+srv://admin:admin@cluster0-pvipx.mongodb.net/eventsHub?retryWrites=true"
+
+const { SpecialImgUpload,ImgUpload } = require('../models/imgUpload');
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useCreateIndex', true);
@@ -19,62 +21,26 @@ mongoose.connect(db, err => {
   }
 })
 
-var ImgStorage = multer.diskStorage({
-  destination : function(req,file,cb) {
-      cb(null, '../ngApp/src/assets')
-  },
-  filename : function(req,file,cb) {
-      var datetime = Date().split(" ")[4].split(":").join("");
-      cb(null,file.originalname + '-' + datetime + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1])
-  }
+var jwt_secret = 'secretKey';
+var jwt_expiration = 600 * 10 * 10;
+
+client.on("connect", function() {
+  console.log("Redis Connected");
 });
-
-var fileFilter = function(req,file,cb){
-  if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg'){
-      cb(null,true);
-  } else {
-      cb(null,false);
-  }
-}
-
-// Image Upload Multer Storage
-var ImgUpload = multer({
-   storage : ImgStorage,
-   dest : '../uploads',
-   limits : {
-       fileSize : 1024 * 1024 * 5
-   },
-   fileFilter : fileFilter 
-}).single('imgFile');
-
-var SpecialImgStorage = multer.diskStorage({
-  destination : function(req,file,cb) {
-      cb(null, '../ngApp/src/assets')
-  },
-  filename : function(req,file,cb) {
-      var datetime = Date().split(" ")[4].split(":").join("");
-      cb(null,file.originalname + '-' + datetime + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1])
-  }
-});
-
-var SpecialImgUpload = multer({
-  storage : SpecialImgStorage,
-  dest : '../uploads',
-  limits : {
-      fileSize : 1024 * 1024 * 5
-  },
-  fileFilter : fileFilter 
-}).single('specialImgFile');
 
 router.post('/register', async (req, res) => {
 
+  console.log(req.session);
+  
   let user = await User.findOne({ email : req.body.email });
   if(user) {
     console.log("User already exists");
     return res.status(400).send("User exists");    
   } else {
     let userData = req.body;
-    console.log(userData);
+    req.session.email = req.body.email;
+    console.log(req.session);
+    // console.log(userData);
     regUser = new User(userData);
     console.log(regUser);
     await regUser.save((error, rUser) => {
@@ -82,8 +48,21 @@ router.post('/register', async (req, res) => {
         console.log(error);
       } else {
         let payload = { subject: rUser._id }
-        let token = jwt.sign(payload, 'secretKey')
-        res.status(200).send({ token });
+        let email = rUser.email;
+        let token = jwt.sign(payload, jwt_secret, {
+           expiresIn : jwt_expiration 
+        });
+        // res.cookie("access_token", token, {
+        //   httpOnly : true
+        // });
+        // res.cookie("refresh_token", refreh_token, {
+        //   httpOnly : true
+        // })
+        // client.set(rUser._id, JSON.stringify({
+        //   refreh_token : refreh_token,
+        //   expires : refreh_token_maxage
+        // }), redis.print);
+        res.status(200).send({ token, email });
       }
     });
   }
@@ -105,6 +84,10 @@ router.post('/login', (req, res) => {
     else {
       let payload = { subject: user._id }
       let email = user.email
+      if(!req.session.email){
+      req.session.email = req.body.email;
+      console.log(req.session);
+      }  
       let token = jwt.sign(payload, 'secretKey')
       res.status(200).send({ token , email });
     }
@@ -112,8 +95,8 @@ router.post('/login', (req, res) => {
 });
 
 router.get('/events', (req, res) => {
-  Events.find({ createdBy : "a@a.com" },(err, event) => {
-    console.log(req);
+  Events.find({ createdBy : req.session.email },(err, event) => {
+    //console.log(req);
     if (err) { console.log(err) }
     res.json(event);
     return event;
@@ -121,11 +104,16 @@ router.get('/events', (req, res) => {
 });
 
 router.get('/special', verifyToken, (req, res) => {
-  SpecialEvents.find((err, event) => {
+  if(!req.session.email){
+    console.log("Go to login");
+     res.redirect('/login');
+  }  else {
+  SpecialEvents.find({ createdBy : req.session.email },(err, event) => {
     if (err) { console.log(err) }
     res.json(event);
     return event;
-  });
+    });
+  }
 })
 
 
