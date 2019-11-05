@@ -428,8 +428,9 @@ var AuthService = /** @class */ (function () {
     function AuthService(http, _router) {
         this.http = http;
         this._router = _router;
-        this._regUrl = "http://localhost:3000/api/register";
-        this._loginUrl = "http://localhost:3000/api/login";
+        this._baseUrl = "http://3.83.55.183/api";
+        this._regUrl = this._baseUrl + "/register";
+        this._loginUrl = this._baseUrl + "/login";
     }
     AuthService.prototype.registerUser = function (user) {
         return this.http.post(this._regUrl, user);
@@ -479,12 +480,13 @@ __webpack_require__.r(__webpack_exports__);
 var EventService = /** @class */ (function () {
     function EventService(http) {
         this.http = http;
-        this._eventsUrl = 'http://localhost:3000/api/events';
-        this._specialEventsUrl = 'http://localhost:3000/api/special';
-        this._addEventsUrl = 'http://localhost:3000/api/addEvent';
-        this._addSpecialEventsUrl = 'http://localhost:3000/api/addSpecial';
-        this._deleteEventsUrl = 'http://localhost:3000/api/deleteEvent';
-        this._deleteSpecialEventsUrl = 'http://localhost:3000/api/deleteSpecial';
+        this._baseUrl = "http://3.83.55.183/api";
+        this._eventsUrl = this._baseUrl + "/events";
+        this._specialEventsUrl = this._baseUrl + "/special";
+        this._addEventsUrl = this._baseUrl + "/addEvent";
+        this._addSpecialEventsUrl = this._baseUrl + "/addSpecial";
+        this._deleteEventsUrl = this._baseUrl + "/deleteEvent";
+        this._deleteSpecialEventsUrl = this._baseUrl + "/deleteSpecial";
     }
     EventService.prototype.getEvent = function () {
         return this.http.get(this._eventsUrl);
