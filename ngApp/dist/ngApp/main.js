@@ -428,7 +428,7 @@ var AuthService = /** @class */ (function () {
     function AuthService(http, _router) {
         this.http = http;
         this._router = _router;
-        this._baseUrl = "http://3.83.55.183/api";
+        this._baseUrl = "http://3.83.55.183:3000/api";
         this._regUrl = this._baseUrl + "/register";
         this._loginUrl = this._baseUrl + "/login";
     }
@@ -480,7 +480,7 @@ __webpack_require__.r(__webpack_exports__);
 var EventService = /** @class */ (function () {
     function EventService(http) {
         this.http = http;
-        this._baseUrl = "http://3.83.55.183/api";
+        this._baseUrl = "http://3.83.55.183:3000/api";
         this._eventsUrl = this._baseUrl + "/events";
         this._specialEventsUrl = this._baseUrl + "/special";
         this._addEventsUrl = this._baseUrl + "/addEvent";
