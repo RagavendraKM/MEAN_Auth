@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class EventService {
 
-  private _baseUrl = "http://3.83.55.183/api";
+  private _baseUrl = "http://3.83.55.183:3000/api";
 
 private _eventsUrl = `${this._baseUrl}/events`;
 private _specialEventsUrl = `${this._baseUrl}/special`;

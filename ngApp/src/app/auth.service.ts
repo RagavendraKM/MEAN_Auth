@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
 
-  private _baseUrl = "http://3.83.55.183/api";
+  private _baseUrl = "http://3.83.55.183:3000/api";
 
 private _regUrl = `${this._baseUrl}/register`;
 private _loginUrl = `${this._baseUrl}/login`;
